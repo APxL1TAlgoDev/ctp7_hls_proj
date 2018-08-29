@@ -10,6 +10,14 @@
 #
 # # Load local source Code and constraints
 loadSource      -dir "$::DIR_PATH/hdl/"
-loadBlockDesign -dir "$::DIR_PATH/bd/"
 loadConstraints -dir "$::DIR_PATH/constraints/"
 loadIpCore      -dir "$::DIR_PATH/ip_repo/"
+
+# Load V7 block design
+if { $::env(VIVADO_VERSION) <= 2016.4 } {
+         loadBlockDesign -path "$::DIR_PATH/bd/2016.4/v7_bd.bd"
+} elseif { $::env(VIVADO_VERSION) <= 2017.2 } {
+         loadBlockDesign -path "$::DIR_PATH/bd/2017.2/v7_bd.bd"      
+} else {
+         loadBlockDesign -path "$::DIR_PATH/bd/2017.3/v7_bd.bd"
+}
