@@ -1,3 +1,6 @@
 *.bit
 build.info
 firmware/build/
+*.Xil/
+*.jou
+*.log
