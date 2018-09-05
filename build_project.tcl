@@ -46,10 +46,30 @@ set_property "ip_repo_paths" "ctp7_hls_demo.ipdefs/ip_0" $obj
 update_ip_catalog -rebuild
 
 # change this to get the right path to your vivado_hls PF project!
-set pfProjDir /home/ntran/PF_CTP7/dev2/GlobalCorrelator_HLS/proj3-mp7-full-ctp7
+#set pfProjDir /home/ntran/PF_CTP7/dev2/GlobalCorrelator_HLS/proj3-mp7-full-ctp7
+set pfProjDir GlobalCorrelator_HLS/proj3-ctp7-full
 set obj [get_filesets sources_1]
 set_property "ip_repo_paths" "${pfProjDir}" $obj
 update_ip_catalog -rebuild
+
+
+###########################################################################
+# https://github.com/p2l1pfp/GlobalCorrelator/blob/master/pulsar_devkit/simple_examples/minimal_BRAM_ILA/build.tcl
+
+# Import the HLS IP! 
+set_property  ip_repo_paths user_ip_repo [current_project]
+file mkdir user_ip_repo
+update_ip_catalog -rebuild
+update_ip_catalog -add_ip "$origin_dir/GlobalCorrelator_HLS/proj3-ctp7-full/solution/impl/ip/cern-cms_hls_mp7wrapped_pfalgo3_full_2_0.zip" -repo_path user_ip_repo
+
+create_ip -name mp7wrapped_pfalgo3_full -vendor "cern-cms" -library hls -module_name mp7wrapped_pfalgo3_full_0 
+#extract_files [get_files ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0.xcix]
+convert_ips -from_core_container  [get_files ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0.xcix]
+generate_target {instantiation_template} [get_files ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci]
+generate_target all [get_files ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci]
+export_ip_user_files -of_objects [get_files ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci] -no_script -force -quiet
+create_ip_run [get_files -of_objects [get_fileset sources_1] ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci]
+###########################################################################
 
 ## ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,7 +84,7 @@ set files [list \
  "[file normalize "ctp7_hls_demo.srcs/sources_1/ip/pattern_bram/pattern_bram.xci"]"\
  "[file normalize "ctp7_hls_demo.srcs/sources_1/ip/ila_0/ila_0.xci"]"\
  "[file normalize "ctp7_hls_demo.srcs/sources_1/ip/ila_hls/ila_hls.xci"]"\
- "[file normalize "ctp7_hls_demo.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci"]"\
+ "[file normalize "ctp7_hls_pf/ctp7_hls_pf.srcs/sources_1/ip/mp7wrapped_pfalgo3_full_0/mp7wrapped_pfalgo3_full_0.xci"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
